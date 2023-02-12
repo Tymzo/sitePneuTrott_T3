@@ -8,7 +8,6 @@ if (
     !isset($_POST['prixUnitaire']) || empty($_POST['prixUnitaire']) ||
     !isset($_POST['qtestock']) || empty($_POST['qtestock']) ||
     !isset($_POST['categorie']) || empty($_POST['categorie']) ||
-    !isset($_POST['fileToUpload']) || empty($_POST['fileToUpload']) ||
     !isset($_POST['descriptionProduit']) || empty($_POST['descriptionProduit'])
 ) {
     $response = array(
@@ -90,18 +89,17 @@ if (
         if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
             //echo "L'image". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " a bien été téléchargé.";
             //Quand tout est ok on est ICI!!!!!
-            $sqlQuery = 'INSERT INTO produit(CAT_ID, PRO_NOM, PRO_DESC, PRO_PRIXUNITAIRE, PRO_IMAGE,PRO_QTESTOCK,PRO_VISIBLE) VALUES (:catID, :nomProduit, :proDescription, :prixUnitaire, :proImage, :qteStock, :proVisible)';
-            $req = $bdd->prepare($sqlQuery);
-            $req->execute([
-                'catID' => $_POST["categorie"],
-                'nomProduit' => $_POST['nom'],
-                'proDescription' => $_POST['descriptionProduit'],
-                'prixUnitaire' => $_POST['prixUnitaire'],
-                'proImage' => $_FILES['fileToUpload']['name'],
-                'qteStock' => $_POST['qtestock'],
-                'proVisible' => 1]);
+            $visible = 1;
+            $query = $bdd->prepare ("INSERT INTO produit(CAT_ID, PRO_NOM, PRO_DESC, PRO_PRIXUNITAIRE, PRO_IMAGE,PRO_QTESTOCK,PRO_VISIBLE) VALUES (:catID, :nomProduit, :proDescription, :prixUnitaire, :proImage, :qteStock, :proVisible)");
+            $query->bindParam(':catID', $_POST["categorie"]);
+            $query->bindParam(':nomProduit',$_POST['nom']);
+            $query->bindParam(':proDescription', $_POST['descriptionProduit']);
+            $query->bindParam(':prixUnitaire', $_POST['prixUnitaire']);
+            $query->bindParam(':proImage', $_FILES['fileToUpload']['name']);
+            $query->bindParam(':qteStock', $_POST['qtestock']);
+            $query->bindParam(':proVisible', $visible);
 
-            if($sqlQuery->execute()) {
+            if($query->execute()) {
                 $response = array(
                     'success' => true,
                     'message' => 'Produit ajouter'
@@ -119,4 +117,4 @@ if (
         }
     }
 }
-?>?>
+?>
