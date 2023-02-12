@@ -1,0 +1,2 @@
+<?php
+define("PAYPAL_ID","AXjUqG0-tNyJ9mrf2lBWtqqJv7EABC5VFGBgwtpRTEbKjqc419WOVR86z_9UQC3DiG_DS3VA6sxvXiLd");
