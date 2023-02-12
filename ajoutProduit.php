@@ -80,7 +80,7 @@ try {
     </div>
 </nav>
 <section class="py-5">
-    <form action="" method="post" enctype="multipart/form-data">
+    <form action="" method="post" enctype="multipart/form-data" id="ajoutProduit">  <!-- ajout d'un id pour pouvoir recup le formulaire-->
         <div class="container py-5">
             <div class="row mb-5">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
@@ -126,7 +126,7 @@ try {
 
                 <div class="row justify-content-center">
                     <div class="col-sm-4 col-md-3 text-center text-lg-start d-flex flex-column item" style="padding-right: 36px;">
-                        <input class="btn btn-primary shadow"  type="submit" name="ajout" value="Confirmer l'ajout" >
+                        <input class="btn btn-primary shadow"  type="submit" name="ajout" value="Confirmer l'ajout" onsubmit="validerFormulaire()">
                         <ul class="list-unstyled">
                             <li></li>
                     </div>
@@ -137,6 +137,33 @@ try {
                     </div>
     </form>
 </section>
+
+    <script>
+        function validerFormulaire(){
+            //je recup les données du formulaire
+            var formData = new FormData(); //creer une nouvelle instance du formulaire
+            formData.append("nom", document.getElementById("nom").value)
+            formData.append("prixUnitaire", document.getElementById("prixUnitaire").value)
+            formData.append("qtestock", document.getElementById("qtestock").value)
+            formData.append("categorie", document.getElementById("categorie").value)
+            formData.append("descriptionProduit", document.getElementById("descriptionProduit").value)
+            formData.append("fileToUpload", document.getElementById("fileToUpload").value)
+
+            //envoie des données au script
+            var hxr = new XMLHttpRequest();
+            xhr.open("POST", "traitementAjout.php", true);
+            xhr.onreadystatechange = function (){
+                if (xhr.readyState === 4 && xhr.status === 200) //le "4" verif que la requête a bien été envoyée et le "200" verif si la page existe
+                    var reponse = JSON.parse(xhr.responseText);
+                if (response.succes){
+                    alert("ajout réussie")
+                }else{
+                    alert(response.message)
+                }
+            };
+            xhr.send(formData)
+        }
+    </script>
 
 <?php
 
