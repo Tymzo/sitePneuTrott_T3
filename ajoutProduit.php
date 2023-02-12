@@ -80,7 +80,7 @@ try {
     </div>
 </nav>
 <section class="py-5">
-    <form action="" method="post" enctype="multipart/form-data" id="ajoutProduit">  <!-- ajout d'un id pour pouvoir recup le formulaire-->
+    <form action="traitementAjout.php" method="post" enctype="multipart/form-data" id="ajoutProduit">  <!-- ajout d'un id pour pouvoir recup le formulaire-->
         <div class="container py-5">
             <div class="row mb-5">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
@@ -165,86 +165,3 @@ try {
         }
     </script>
 
-<?php
-
-
-if(isset($_POST["ajout"])) {
-    if (
-        !isset($_POST['nom']) || empty($_POST['nom']) ||
-        !isset($_POST['prixUnitaire']) || empty($_POST['prixUnitaire']) ||
-        !isset($_POST['qtestock']) || empty($_POST['qtestock']) ||
-        !isset($_POST['categorie']) || empty($_POST['categorie']) ||
-        !isset($_POST['descriptionProduit']) || empty($_POST['descriptionProduit'])
-    ) {
-        echo '<p>Vous devez remplir correctement tous les champs.</p>';
-        return;
-    }else{
-        $target_dir = "img/";
-        $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
-        $uploadOk = 1;
-        $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
-        // Check if image file is a actual image or fake image
-        if(isset($_POST["submit"])) {
-            $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-            if($check !== false) {
-                echo "File is an image - " . $check["mime"] . ".";
-                $uploadOk = 1;
-            } else {
-                echo "File is not an image.";
-                $uploadOk = 0;
-            }
-        }
-
-        // Check if file already exists
-        if (file_exists($target_file)) {
-            echo "Sorry, file already exists.";
-            $uploadOk = 0;
-        }
-
-        // Check file size
-        if ($_FILES["fileToUpload"]["size"] > 500000) {
-            echo "Sorry, your file is too large.";
-            $uploadOk = 0;
-        }
-
-        // Allow certain file formats
-        if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-            && $imageFileType != "gif" ) {
-            echo "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
-            $uploadOk = 0;
-        }
-
-        // Check if $uploadOk is set to 0 by an error
-        if ($uploadOk == 0) {
-            echo "Sorry, your file was not uploaded.";
-            // if everything is ok, try to upload file
-        } else {
-            if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-                //echo "L'image". htmlspecialchars( basename( $_FILES["fileToUpload"]["name"])). " a bien été téléchargé.";
-                //Quand tout est ok on est ICI!!!!!
-                $sqlQuery = 'INSERT INTO produit(CAT_ID, PRO_NOM, PRO_DESC, PRO_PRIXUNITAIRE, PRO_IMAGE,PRO_QTESTOCK,PRO_VISIBLE) VALUES (:catID, :nomProduit, :proDescription, :prixUnitaire, :proImage, :qteStock, :proVisible)';
-                $req = $bdd->prepare($sqlQuery);
-                $req->execute([
-                    'catID' => $_POST["categorie"],
-                    'nomProduit' => $_POST['nom'],
-                    'proDescription' => $_POST['descriptionProduit'],
-                    'prixUnitaire' => $_POST['prixUnitaire'],
-                    'proImage' =>  $_FILES['fileToUpload']['name'],
-                    'qteStock' => $_POST['qtestock'],
-                    'proVisible' => 1]);
-
-                echo "Le produit a bien été ajouté";
-
-
-            } else {
-                echo "Sorry, there was an error uploading your file.";
-            }
-        }
-    }
-}
-
-//Source du code pour l'image : https://www.w3schools.com/php/php_file_upload.asp
-//<img src="img/<?php $cat['CAT_NOM'] php>" alt="Girl in a jacket" width="500" height="600">
-
-?>
