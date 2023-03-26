@@ -8,6 +8,7 @@ if (
     !isset($_POST['prixUnitaire']) || empty($_POST['prixUnitaire']) ||
     !isset($_POST['qtestock']) || empty($_POST['qtestock']) ||
     !isset($_POST['categorie']) || empty($_POST['categorie']) ||
+    !isset($_FILES['fileToUpload']['name']) || empty($_FILES['fileToUpload']['name']) ||
     !isset($_POST['descriptionProduit']) || empty($_POST['descriptionProduit'])
 ) {
     $response = array(
@@ -15,6 +16,7 @@ if (
         'message' => 'Tous les champs sont obligatoires'
     );
     echo json_encode($response);
+    header('Location: ajoutProduit.php?reg_err=champVide');
     exit();
 } else {
     $target_dir = "img/";
@@ -34,6 +36,8 @@ if (
                 'message' => "File is not an image."
             );
             echo json_encode($response);
+            $err = "notImage";
+            header("Location:ajoutProduit.php?reg_err=notImage");
             exit();
         }
     }
@@ -47,6 +51,7 @@ if (
             'message' => 'File already exist'
         );
         echo json_encode($response);
+        header("Location:ajoutProduit.php?reg_err=imageExist");
         exit();
     }
 
@@ -59,6 +64,7 @@ if (
             'message' => 'File is too big'
         );
         echo json_encode($response);
+        header("Location:ajoutProduit.php?reg_err=imageTaille");
         exit();
     }
 
@@ -71,12 +77,12 @@ if (
             'message' => "Sorry, only JPG, JPEG, PNG & GIF files are allowed."
         );
         echo json_encode($response);
+        header("Location:ajoutProduit.php?reg_err=imageIncorr");
         exit();
     }
 
     // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
-
 
         $response = array(
             'success' => false,
@@ -104,17 +110,19 @@ if (
                     'success' => true,
                     'message' => 'Produit ajouter'
                 );
-                echo json_encode($response);
             } else {
                 $response = array(
                     'success' => false,
                     'message' => "Une erreur est survenue lors de l'ajout"
                 );
-                echo json_encode($response);
             }
+            echo json_encode($response);
 
-            header("Location:ajoutProduit.php?success");
+            header("Location:ajoutProduit.php?reg_err=success");
         }
     }
 }
+
+
+
 ?>
