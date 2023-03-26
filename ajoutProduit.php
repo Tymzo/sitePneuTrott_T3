@@ -138,6 +138,61 @@ try {
     </form>
 </section>
 
+    <?php
+    if(isset($_GET['reg_err']))
+    {
+        $err = htmlspecialchars($_GET['reg_err']);
+
+        switch($err)
+        {
+            case 'success':
+                ?>
+                <div class="alert alert-success">
+                    <strong>Succès</strong> ajout réussie !
+                </div>
+                <?php
+                break;
+
+            case 'champVide':
+                ?>
+                <div class="alert alert-danger">
+                    <strong>Erreur</strong> champ vide
+                </div>
+                <?php
+                break;
+
+            case 'notImage':
+                ?>
+                <div class="alert alert-danger">
+                    <strong>Erreur</strong> ceci n'est pas une image
+                </div>
+                <?php
+                break;
+
+                case 'imageExist':
+                ?>
+                <div class="alert alert-danger">
+                    <strong>Erreur</strong> image déjà existante
+                </div>
+                <?php
+                break;
+
+            case 'imageTaille':
+                ?>
+                <div class="alert alert-danger">
+                    <strong>Erreur</strong> taille de l'image trop grosse
+                </div>
+            <?php
+            case 'imageIncorr':
+                ?>
+                <div class="alert alert-danger">
+                    <strong>Erreur</strong> mauvais format d'image
+                </div>
+            <?php
+
+        }
+    }
+    ?>
     <script>
         function validerFormulaire(){
             //je recup les données du formulaire
@@ -150,15 +205,16 @@ try {
             formData.append("fileToUpload", document.getElementById("fileToUpload").value)
 
             //envoie des données au script
-            var hxr = new XMLHttpRequest();
-            xhr.open("POST", "traitementAjout.php", true);
+            var xhr = new XMLHttpRequest(); //permet d'interagir avec le serveur
+            xhr.open("POST", "traitementAjout.php", true); //true = asynchrone, permet d'envoyé une requête au serveur, même si la réponse n'a pas encore atteint le navigateur
+                                                            //synchrone = envoie une requête a la fois au serveur, si je veux envoyé d'autre requête je dois attendre la rép du serv
             xhr.onreadystatechange = function (){
                 if (xhr.readyState === 4 && xhr.status === 200) //le "4" verif que la requête a bien été envoyée et le "200" verif si la page existe
                     var reponse = JSON.parse(xhr.responseText);
-                if (response.succes){
+                if (reponse.succes){
                     alert("ajout réussie")
                 }else{
-                    alert(response.message)
+                    alert(reponse.message)
                 }
             };
             xhr.send(formData)
